@@ -1,0 +1,13 @@
+serverPort=30001
+
+dbName=aslmq_db
+dbHost=172.31.0.75
+dbPort=40001
+dbUser=aslmq_user
+dbPassword=asldb
+
+monitorDbName=aslmq_monitor_db
+monitorDbHost=172.31.0.75
+monitorDbPort=40001
+monitorDbUser=aslmq_monitor_user
+monitorDbPassword=asldb

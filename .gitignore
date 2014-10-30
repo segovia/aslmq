@@ -1,0 +1,13 @@
+bin/*
+/build/
+/dist/
+/build/
+/gen/
+/build/
+/graphs/
+*~
+*.pyc
+/measurements/
+bash/amazon-ips.txt
+config/amazon.properties
+config/amazon.public.properties

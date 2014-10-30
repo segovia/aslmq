@@ -1,0 +1,9 @@
+clean
+compile
+dist
+drop-create-db
+drop-create-monitor-db
+drop-create-monitor-tables
+drop-create-tables
+drop-create-tables-with-mock-procedures
+simple

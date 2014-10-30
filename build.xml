@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="aslmq" default="compile" basedir=".">
+	<description>
+        simple example build file
+    </description>
+	<!-- set global properties for this build -->
+	
+	<property name="config" 		location="config"/>
+	
+	<property file="${config}/${build.properties.file}"/>
+	
+	<property name="src" 			location="src"/>
+	<property name="build" 			location="build"/>
+	<property name="dist"  			location="dist"/>
+	<property name="lib"  			location="lib"/>
+	<property name="sql"			location="sql"/>
+	<property name="postgreJar"  	location="${lib}/postgresql-9.3-1102.jdbc41.jar"/>
+	
+	<property name="middlewareDist"	location="${dist}/middleware"/>
+	<property name="middlewareJar"  location="${middlewareDist}/middleware.jar"/>
+	<property name="middlewareZip"  location="${dist}/middleware.zip"/>
+	
+	<property name="clientDist"		location="${dist}/client"/>
+	<property name="clientJar"  	location="${clientDist}/client.jar"/>
+	<property name="clientZip"  	location="${dist}/client.zip"/>
+	
+	<property name="dbTestDist"		location="${dist}/dbTest"/>
+	<property name="dbTestJar"  	location="${dbTestDist}/dbTest.jar"/>
+	<property name="dbTestZip"  	location="${dist}/dbTest.zip"/>
+	
+	<property name="dbUrlPrefix"	value="jdbc:postgresql://${dbHost}:${dbPort}"/>
+	<property name="dbUrl"  		value="${dbUrlPrefix}/${dbName}"/>
+	
+	<property name="monitorDbUrlPrefix"	value="jdbc:postgresql://${monitorDbHost}:${monitorDbPort}"/>
+	<property name="monitorDbUrl"  		value="${monitorDbUrlPrefix}/${monitorDbName}"/>
+
+	<target name="init">
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+			<classpath>
+				<pathelement path="${postgreJar}"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/"/>
+
+		<!-- Put everything in ${build} into the middleware.jar file -->
+		<jar jarfile="${middlewareJar}" basedir="${build}">
+			<zipgroupfileset dir="${lib}" includes="*jar" />
+			<manifest>
+				<attribute name="Main-Class" value="middleware.MiddlewareServer"/>
+			</manifest>
+		</jar>
+		
+		<copy todir="${middlewareDist}">
+			<fileset dir="${config}"/>
+		</copy>
+		
+		<zip destfile="${middlewareZip}" basedir="${middlewareDist}" />
+		
+		<!-- Put everything in ${build} into the client.jar file -->
+		<jar jarfile="${clientJar}" basedir="${build}">
+			<zipgroupfileset dir="${lib}" includes="*jar" />
+			<manifest>
+				<attribute name="Main-Class" value="client.ClientWorkloadPool"/>
+			</manifest>
+		</jar>
+		
+		<copy todir="${clientDist}">
+			<fileset dir="${config}"/>
+		</copy>
+		
+		<zip destfile="${clientZip}" basedir="${clientDist}" />
+		
+		<!-- Put everything in ${build} into the dbTest.jar file -->
+		<jar jarfile="${dbTestJar}" basedir="${build}">
+			<zipgroupfileset dir="${lib}" includes="*jar" />
+			<manifest>
+				<attribute name="Main-Class" value="dbtester.DatabaseTester"/>
+			</manifest>
+		</jar>
+		
+		<copy todir="${dbTestDist}">
+			<fileset dir="${config}"/>
+		</copy>
+		
+		<zip destfile="${dbTestZip}" basedir="${dbTestDist}" />
+	</target>
+
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+
+	<target name="drop-create-db" description="creates the db" >
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrlPrefix}/template1"
+         userid="postgres"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue">
+			  DROP DATABASE ${dbName};
+			  DROP USER ${dbUser};
+		      
+			  CREATE USER ${dbUser} WITH PASSWORD '${dbPassword}';
+		      CREATE DATABASE ${dbName} OWNER ${dbUser};
+		</sql>
+	</target>
+	
+	<target name="drop-create-monitor-db" description="creates the monitor db" >
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${monitorDbUrlPrefix}/template1"
+         userid="postgres"
+         password="${monitorDbPassword}"
+         autocommit="true"
+		 onerror="continue">
+			  DROP DATABASE ${monitorDbName};
+			  DROP USER ${monitorDbUser};
+		      
+			  CREATE USER ${monitorDbUser} WITH PASSWORD '${monitorDbPassword}';
+		      CREATE DATABASE ${monitorDbName} OWNER ${monitorDbUser};
+		</sql>
+	</target>
+
+	<target name="drop-create-tables" description="creates tables" >
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 src="${sql}/drop_tables.sql"/> 
+		
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 src="${sql}/create_tables.sql"/>
+
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 delimitertype="row"
+		 src="${sql}/procedures.sql"/>	
+		
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue">
+			SELECT * FROM initial_data();
+		</sql>
+	</target>
+	
+	<target name="drop-create-tables-with-mock-procedures" description="creates tables" >
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 src="${sql}/drop_tables.sql"/> 
+		
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 src="${sql}/create_tables.sql"/> 
+
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 delimitertype="row"
+		 src="${sql}/mock_procedures_${mock.level}.sql"/>	
+		
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${dbUrl}"
+         userid="${dbUser}"
+         password="${dbPassword}"
+         autocommit="true"
+		 onerror="continue">
+			SELECT * FROM initial_data();
+		</sql>
+	</target>
+
+	<target name="drop-create-monitor-tables" description="creates monitor tables" >
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${monitorDbUrl}"
+         userid="${monitorDbUser}"
+         password="${monitorDbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 src="${sql}/monitor-tables.sql"/>
+		
+		<sql driver="org.postgresql.Driver"
+         classpath="${postgreJar}"
+         url="${monitorDbUrl}"
+         userid="${monitorDbUser}"
+         password="${monitorDbPassword}"
+         autocommit="true"
+		 onerror="continue"
+		 delimitertype="row"
+		 src="${sql}/monitor-procedures.sql"/>
+	</target>
+</project>

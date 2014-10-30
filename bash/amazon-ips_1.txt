@@ -1,0 +1,18 @@
+54.173.97.81
+54.173.97.81
+172.31.1.172
+172.31.1.173
+54.173.42.85
+54.165.70.183
+54.173.0.224
+54.165.63.146
+
+
+# ips to be set
+0: 			db public ip
+1: 			monitor db public ip
+2-n: 		server private ip
+n+1-2*n:	server public ip
+2*n+1-m:	client public ip
+
+# dont forget to set private db ips in amazon.properties
