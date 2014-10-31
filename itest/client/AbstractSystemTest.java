@@ -38,6 +38,7 @@ public class AbstractSystemTest {
 	protected final static String CREATE_TABLE_FILE = "sql/create_tables.sql";
 	protected final static String DROP_CREATE_MONITOR_TABLE_FILE = "sql/monitor-tables.sql";
 	protected final static String PROCEDURES_FILE = "sql/procedures.sql";
+	protected final static String MONITOR_PROCEDURES_FILE = "sql/monitor-procedures.sql";
 
 	protected static String smallMsgText;
 	protected static String largeMsgText;
@@ -63,6 +64,7 @@ public class AbstractSystemTest {
 		execSQLFile(dbConnection, CREATE_TABLE_FILE, false);
 		execSQLFile(dbConnection, PROCEDURES_FILE, true);
 		execSQLFile(monitorDBConnection, DROP_CREATE_MONITOR_TABLE_FILE, false);
+		execSQLFile(monitorDBConnection, MONITOR_PROCEDURES_FILE, true);
 
 		try (CallableStatement stmt = dbConnection.prepareCall("{call initial_data()}")) {
 			stmt.execute();
@@ -356,9 +358,14 @@ public class AbstractSystemTest {
 
 	}
 
+	protected void runSystemWithThreadsSkipAssert(final int clientId, final int samples, int threads,
+			TestWorkloadFactory testTestWorkloadFactory) throws Throwable {
+		runSystem(clientId, samples, 0, threads, testTestWorkloadFactory, true);
+	}
+
 	protected void runSystemWithThreads(final int clientId, final int samples, int threads,
 			TestWorkloadFactory testTestWorkloadFactory) throws Throwable {
-		runSystem(clientId, samples, 0, threads, testTestWorkloadFactory);
+		runSystem(clientId, samples, 0, threads, testTestWorkloadFactory, false);
 	}
 
 	protected void runSystem(final int clientId, final int samples, TestWorkload workload) throws Throwable {
@@ -367,17 +374,19 @@ public class AbstractSystemTest {
 
 	protected void runSystem(final int clientId, final int samples, final int offset, TestWorkload workload)
 			throws Throwable {
-		runSystem(clientId, samples, offset, 1, new TestWorkloadFactory(workload));
+		runSystem(clientId, samples, offset, 1, new TestWorkloadFactory(workload), false);
 	}
 
 	protected void runSystem(final int clientId, final int samples, final int offset, int threads,
-			TestWorkloadFactory testWorkloadFactory) throws Throwable {
+			TestWorkloadFactory testWorkloadFactory, boolean skipAssert) throws Throwable {
 		startSystem(clientId, samples, threads, testWorkloadFactory);
 
 		List<TestWorkload> workloads = waitForShutdown(testWorkloadFactory);
 
-		assertClientMeasurements(clientId, offset, workloads);
-		assertMiddlewareMeasurements(clientId, offset, workloads);
+		if (!skipAssert) {
+			assertClientMeasurements(clientId, offset, workloads);
+			assertMiddlewareMeasurements(clientId, offset, workloads);
+		}
 	}
 
 	protected List<TestWorkload> waitForShutdown(TestWorkloadFactory testWorkloadFactory) throws Throwable {

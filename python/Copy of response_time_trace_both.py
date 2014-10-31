@@ -22,9 +22,7 @@ groupPercentile = 95
 
 # print "step -1"
 prefix=sys.argv[1]
-filename = prefix + 'middle_time.csv'
-f=open(filename)
-next(f) # skip first line
+
 
 # print "step 0"
 bins = 1
@@ -35,6 +33,10 @@ response_time_bin = []
 
 response_time_sum = [0]
 database_time_sum = [0]
+acquire_conn_time_sum = [0]
+serialization_time_sum = [0]
+deserialization_time_sum = [0]
+release_conn_time_sum = [0]
 statement_exec_time_sum = [0]
 
 msg_count = [0]
@@ -46,6 +48,40 @@ error_client_id = []
 error_request_type = []
 error_type = []
 error_time = []
+
+f=open(prefix + 'middle_time.csv')
+next(f) # skip first line
+for row in csv.reader(f):
+    elapsed_time = int(row[3])
+    request_type = int(row[5])
+
+    total_msg += 1
+    if elapsed_time > bins * time_step:
+        bins += 1
+        response_time_sum.append(0)
+        database_time_sum.append(0)
+        acquire_conn_time_sum.append(0)
+        serialization_time_sum.append(0)
+        deserialization_time_sum.append(0)
+        release_conn_time_sum.append(0)
+        statement_exec_time_sum.append(0)
+        msg_count.append(0)
+    
+    response_time.append(int(row[4]))
+    response_time_bin.append(bins-1)
+    response_time_sum[-1] += response_time[-1]
+    database_time_sum[-1] += int(row[11])
+    acquire_conn_time_sum[-1] += int(row[9])
+    serialization_time_sum[-1] += int(row[7])
+    deserialization_time_sum[-1] += int(row[8])
+    release_conn_time_sum[-1] += int(row[10])
+    statement_exec_time_sum[-1] += int(row[12])
+    msg_count[-1] += 1
+
+f=open(prefix + 'client_time.csv')
+next(f) # skip first line
+cur_msg = 0
+cur_bin = 0
 for row in csv.reader(f):
     elapsed_time = int(row[3])
     request_type = int(row[5])
@@ -64,6 +100,10 @@ for row in csv.reader(f):
         bins += 1
         response_time_sum.append(0)
         database_time_sum.append(0)
+        acquire_conn_time_sum.append(0)
+        serialization_time_sum.append(0)
+        deserialization_time_sum.append(0)
+        release_conn_time_sum.append(0)
         statement_exec_time_sum.append(0)
         msg_count.append(0)
     
@@ -71,9 +111,12 @@ for row in csv.reader(f):
     response_time_bin.append(bins-1)
     response_time_sum[-1] += response_time[-1]
     database_time_sum[-1] += int(row[11])
+    acquire_conn_time_sum[-1] += int(row[9])
+    serialization_time_sum[-1] += int(row[7])
+    deserialization_time_sum[-1] += int(row[8])
+    release_conn_time_sum[-1] += int(row[10])
     statement_exec_time_sum[-1] += int(row[12])
     msg_count[-1] += 1
-    
 
 
 # print "step 2"
@@ -83,6 +126,10 @@ for row in csv.reader(f):
 # print "step 3"
 average_response_time =             [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(response_time_sum, msg_count)];
 average_database_time =             [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(database_time_sum, msg_count)];
+average_acquire_conn_time =         [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(acquire_conn_time_sum, msg_count)];
+average_serialization_time_sum =    [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(serialization_time_sum, msg_count)];
+average_deserialization_time_sum =  [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(deserialization_time_sum, msg_count)];
+average_release_conn_time_sum =     [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(release_conn_time_sum, msg_count)];
 average_statement_exec_time_sum =   [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(statement_exec_time_sum, msg_count)];
 throughput_per_second           =   [c/seconds_per_step for c in msg_count];
 
@@ -114,6 +161,10 @@ print "start:" + str(start) + " end:" +  str(end)
 # # ignore first and last 10% of time
 average_response_time               = average_response_time             [start:end]
 average_database_time               = average_database_time             [start:end]
+average_acquire_conn_time           = average_acquire_conn_time         [start:end]
+average_serialization_time_sum      = average_serialization_time_sum    [start:end]
+average_deserialization_time_sum    = average_deserialization_time_sum  [start:end]
+average_release_conn_time_sum       = average_release_conn_time_sum     [start:end]
 average_statement_exec_time_sum     = average_statement_exec_time_sum   [start:end]
 throughput_per_second               = throughput_per_second             [start:end]
 bins = end-start
@@ -167,7 +218,11 @@ for event_list in gc_client_events_mat:
 plt.plot(
          steps, average_response_time,              'b',
          steps, average_database_time,              'r',
+         steps, average_acquire_conn_time,          'g',
+         steps, average_serialization_time_sum,     'y',
+        steps, average_deserialization_time_sum,   'm',
 #         steps, group_percentile,                   'm',
+         steps, average_release_conn_time_sum,      'c',
          steps, average_statement_exec_time_sum,    'k',
          gc_middle_events,gc_middle_events_y,'ro',
          gc_client_events,gc_client_events_y,'o'
@@ -175,7 +230,7 @@ plt.plot(
 plt.ylabel('Average response time (ms/second)')
 plt.xlabel('Elapsed seconds')
 plt.xlim([1,bins])
-# plt.ylim(0, 25)
+plt.ylim(0, 25)
 
 # print "step 5"
 # dt = datetime.datetime.now()

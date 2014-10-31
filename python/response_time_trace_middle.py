@@ -109,8 +109,10 @@ throughput_per_second           =   [c/seconds_per_step for c in msg_count];
 # 
 # steps = range(1,bins)
 
-msgsToDiscard = int(total_msg*0.0)
-msgsToDiscardEnd = int(total_msg*0.0)
+msgsToDiscard = 0
+msgsToDiscardEnd = 0
+msgsToDiscard = int(total_msg*0.12)
+msgsToDiscardEnd = int(total_msg*0.1)
 curCount = 0
 curBin = 0
 start = 0
@@ -133,7 +135,7 @@ average_serialization_time_sum      = average_serialization_time_sum    [start:e
 average_deserialization_time_sum    = average_deserialization_time_sum  [start:end]
 average_release_conn_time_sum       = average_release_conn_time_sum     [start:end]
 average_statement_exec_time_sum     = average_statement_exec_time_sum   [start:end]
-msg_count                           = msg_count                         [start:end]
+throughput_per_second               = throughput_per_second             [start:end]
 bins = end-start
 
 steps = range(1,bins+1)
@@ -197,7 +199,7 @@ plt.plot(
 plt.ylabel('Average response time (ms/second)')
 plt.xlabel('Elapsed seconds')
 plt.xlim([1,bins])
-plt.ylim(0, 18)
+# plt.ylim(0, 25)
 
 # print "step 5"
 # dt = datetime.datetime.now()

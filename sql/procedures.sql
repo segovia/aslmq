@@ -215,17 +215,24 @@ END;
 '
 LANGUAGE plpgsql;
 
--- create 256 clients and 30 queues
-CREATE OR REPLACE FUNCTION fill_db () 
+CREATE OR REPLACE FUNCTION fill_db (workload TEXT) 
 RETURNS INT AS
 '
+DECLARE
+	msg TEXT;
 BEGIN
-	FOR k IN 1..10000 LOOP
+	IF workload IS DISTINCT FROM ''large'' THEN
+		msg := ''Msg 200 chars 0123456789 Msg 200 chars 0123456789 Msg 200 chars 0123456789 Msg 200 chars 0123456789 Msg 200 chars 0123456789 Msg 200 chars 0123456789 Msg 200 chars 0123456789 Msg 200 chars 0123456789 '';
+	ELSE
+		msg := ''Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 Msg 2000 chars 012345678 '';
+	END IF;
+	FOR k IN 1..20 LOOP
 		FOR j IN 1..30 LOOP
 			FOR i IN 1..10 LOOP
 				-- INSERT INTO message (sender_id, queue_id, text, recipient_id) VALUES (i_sender_id, i_queue_id, i_message_text, i_recipient_id);
-				INSERT INTO message (sender_id, queue_id, text) VALUES (j, i, ''This is the message text'');
-				INSERT INTO message (sender_id, queue_id, text, recipient_id) VALUES (j, i, ''This is the message text'', j);
+				
+				INSERT INTO message (sender_id, queue_id, text) VALUES (j, i, msg);
+				INSERT INTO message (sender_id, queue_id, text, recipient_id) VALUES (j, i, msg, j);
 			END LOOP;
 		END LOOP;
 	END LOOP;

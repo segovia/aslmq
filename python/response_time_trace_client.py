@@ -22,7 +22,7 @@ groupPercentile = 95
 
 # print "step -1"
 prefix=sys.argv[1]
-filename = prefix + 'middle_time.csv'
+filename = prefix + 'client_time.csv'
 f=open(filename)
 next(f) # skip first line
 
@@ -33,9 +33,12 @@ time_step = seconds_per_step * sInNs
 response_time = []
 response_time_bin = []
 
+# id,experiment_id,client_id,elapsed_time,response_time,request_type,response_type,serialization_time,deserialization_time,network_time
 response_time_sum = [0]
 database_time_sum = [0]
-statement_exec_time_sum = [0]
+serialization_time_sum = [0]
+deserialization_time_sum = [0]
+network_time_sum = [0]
 
 msg_count = [0]
 total_msg = 0
@@ -63,15 +66,17 @@ for row in csv.reader(f):
     if elapsed_time > bins * time_step:
         bins += 1
         response_time_sum.append(0)
-        database_time_sum.append(0)
-        statement_exec_time_sum.append(0)
+        serialization_time_sum.append(0)
+        deserialization_time_sum.append(0)
+        network_time_sum.append(0)
         msg_count.append(0)
     
     response_time.append(int(row[4]))
     response_time_bin.append(bins-1)
     response_time_sum[-1] += response_time[-1]
-    database_time_sum[-1] += int(row[11])
-    statement_exec_time_sum[-1] += int(row[12])
+    serialization_time_sum[-1] += int(row[7])
+    deserialization_time_sum[-1] += int(row[8])
+    network_time_sum[-1] += int(row[9])
     msg_count[-1] += 1
     
 
@@ -82,12 +87,13 @@ for row in csv.reader(f):
 
 # print "step 3"
 average_response_time =             [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(response_time_sum, msg_count)];
-average_database_time =             [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(database_time_sum, msg_count)];
-average_statement_exec_time_sum =   [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(statement_exec_time_sum, msg_count)];
+average_serialization_time_sum =    [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(serialization_time_sum, msg_count)];
+average_deserialization_time_sum =  [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(deserialization_time_sum, msg_count)];
+average_network_time_sum =   [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(network_time_sum, msg_count)];
 throughput_per_second           =   [c/seconds_per_step for c in msg_count];
 
 # del average_database_time[0]
-# del average_statement_exec_time_sum[0]
+# del average_network_time_sum[0]
 # del msg_count[0]
 # del group_percentile[0]
 # 
@@ -113,8 +119,9 @@ print "start:" + str(start) + " end:" +  str(end)
 
 # # ignore first and last 10% of time
 average_response_time               = average_response_time             [start:end]
-average_database_time               = average_database_time             [start:end]
-average_statement_exec_time_sum     = average_statement_exec_time_sum   [start:end]
+average_serialization_time_sum      = average_serialization_time_sum    [start:end]
+average_deserialization_time_sum    = average_deserialization_time_sum  [start:end]
+average_network_time_sum            = average_network_time_sum          [start:end]
 throughput_per_second               = throughput_per_second             [start:end]
 bins = end-start
 
@@ -146,14 +153,6 @@ print("%.2f%%" % (tp_ci95 * 100.0 / tp_mean))
 
 
 ###### read gc log
-gc_middle_events_mat = rmgl.read_middle_gc_log_values(prefix)
-gc_middle_events = []
-gc_middle_events_y = []
-for event_list in gc_middle_events_mat:
-    for event in event_list:
-        gc_middle_events.append(event-start)
-        gc_middle_events_y.append(0.1)
-        
 gc_client_events_mat = rcgl.read_client_gc_log_values(prefix)
 gc_client_events = []
 gc_client_events_y = []
@@ -166,21 +165,21 @@ for event_list in gc_client_events_mat:
 # print "step 4"
 plt.plot(
          steps, average_response_time,              'b',
-         steps, average_database_time,              'r',
+         steps, average_serialization_time_sum,     'y',
+         steps, average_deserialization_time_sum,   'm',
 #         steps, group_percentile,                   'm',
-         steps, average_statement_exec_time_sum,    'k',
-         gc_middle_events,gc_middle_events_y,'ro',
+         steps, average_network_time_sum,    'k',
          gc_client_events,gc_client_events_y,'o'
          )
 plt.ylabel('Average response time (ms/second)')
 plt.xlabel('Elapsed seconds')
 plt.xlim([1,bins])
-# plt.ylim(0, 25)
+plt.ylim(0, 25)
 
 # print "step 5"
 # dt = datetime.datetime.now()
 # plt.savefig('gen/' + filename[0:-4] + '.avg_resp_time.' + dt.strftime("%Y%m%d%H%M%S") + '.png', bbox_inches='tight')
-plt.savefig('gen/' + os.path.basename(filename)[0:-4] + '.avg_resp_time.png', bbox_inches='tight')
+plt.savefig('gen/' + os.path.basename(filename)[0:-4] + '.client_avg_resp_time.png', bbox_inches='tight')
 plt.show()
 # print "step 6"
 
