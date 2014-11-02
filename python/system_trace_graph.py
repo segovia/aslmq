@@ -22,7 +22,9 @@ groupPercentile = 95
 
 # print "step -1"
 prefix=sys.argv[1]
-
+filename = prefix + 'middle_time.csv'
+f=open(filename)
+next(f) # skip first line
 
 # print "step 0"
 bins = 1
@@ -48,40 +50,6 @@ error_client_id = []
 error_request_type = []
 error_type = []
 error_time = []
-
-f=open(prefix + 'middle_time.csv')
-next(f) # skip first line
-for row in csv.reader(f):
-    elapsed_time = int(row[3])
-    request_type = int(row[5])
-
-    total_msg += 1
-    if elapsed_time > bins * time_step:
-        bins += 1
-        response_time_sum.append(0)
-        database_time_sum.append(0)
-        acquire_conn_time_sum.append(0)
-        serialization_time_sum.append(0)
-        deserialization_time_sum.append(0)
-        release_conn_time_sum.append(0)
-        statement_exec_time_sum.append(0)
-        msg_count.append(0)
-    
-    response_time.append(int(row[4]))
-    response_time_bin.append(bins-1)
-    response_time_sum[-1] += response_time[-1]
-    database_time_sum[-1] += int(row[11])
-    acquire_conn_time_sum[-1] += int(row[9])
-    serialization_time_sum[-1] += int(row[7])
-    deserialization_time_sum[-1] += int(row[8])
-    release_conn_time_sum[-1] += int(row[10])
-    statement_exec_time_sum[-1] += int(row[12])
-    msg_count[-1] += 1
-
-f=open(prefix + 'client_time.csv')
-next(f) # skip first line
-cur_msg = 0
-cur_bin = 0
 for row in csv.reader(f):
     elapsed_time = int(row[3])
     request_type = int(row[5])
@@ -117,6 +85,7 @@ for row in csv.reader(f):
     release_conn_time_sum[-1] += int(row[10])
     statement_exec_time_sum[-1] += int(row[12])
     msg_count[-1] += 1
+    
 
 
 # print "step 2"
@@ -230,7 +199,7 @@ plt.plot(
 plt.ylabel('Average response time (ms/second)')
 plt.xlabel('Elapsed seconds')
 plt.xlim([1,bins])
-plt.ylim(0, 25)
+# plt.ylim(0, 25)
 
 # print "step 5"
 # dt = datetime.datetime.now()

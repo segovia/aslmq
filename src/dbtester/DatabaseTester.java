@@ -35,7 +35,7 @@ public class DatabaseTester {
 
 		String msg = "large".equals(args[argIdx++]) ? SampleMessage.LARGE_MSG : SampleMessage.SMALL_MSG;
 		for (int i = 0; i < maxDbConnections; i++) {
-			activeRunnables.add(new DatabaseNetworkTesterRunnable(prop.getProperty("dbHost"), prop
+			activeRunnables.add(new DatabaseNetworkTesterRunnable(i + 1, prop.getProperty("dbHost"), prop
 					.getProperty("dbPort"), prop.getProperty("dbName"), prop.getProperty("dbUser"), prop
 					.getProperty("dbPassword"), masterMonitor, msg));
 		}
@@ -55,11 +55,11 @@ public class DatabaseTester {
 		private MiddlewareDBConnection conn;
 		private DatabaseTesterDefaultWorkload workload;
 
-		public DatabaseNetworkTesterRunnable(String dbHost, String dbPort, String dbName, String dbUser,
+		public DatabaseNetworkTesterRunnable(int clientId, String dbHost, String dbPort, String dbName, String dbUser,
 				String dbPassword, DatabaseTesterMasterMonitor masterMonitor, String msg) throws SQLException {
 			this.masterMonitor = masterMonitor;
 			conn = new MiddlewareDBConnection(dbHost, dbPort, dbName, dbUser, dbPassword);
-			workload = new DatabaseTesterDefaultWorkload(1, conn, new DatabaseTesterMonitor(masterMonitor), msg);
+			workload = new DatabaseTesterDefaultWorkload(clientId, conn, new DatabaseTesterMonitor(masterMonitor), msg);
 		}
 
 		@Override
