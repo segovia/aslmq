@@ -27,7 +27,8 @@ if len(sys.argv) > 2:
 
 # print "step -1"
 filename = sys.argv[1]
-if filename[-4:-0] != '.csv': exit
+if filename[-4:] != '.csv': 
+    exit(0)
 f=open(filename)
 next(f) # skip first line
 
@@ -39,7 +40,7 @@ response_time = []
 response_time_bin = []
 
 response_time_sum = [0]
-statement_exec_time_sum = [0]
+serialization_time_sum = [0]
 
 msg_count = [0]
 total_msg = 0
@@ -67,14 +68,14 @@ for row in csv.reader(f):
     if elapsed_time > bins * time_step:
         bins += 1
         response_time_sum.append(0)
-        statement_exec_time_sum.append(0)
+        serialization_time_sum.append(0)
         msg_count.append(0)
     
-#     id,experiment_id,client_id,elapsed_time,database_network_time,request_type,response_type,statement_exec_time
+# id,experiment_id,client_id,elapsed_time,response_time,request_type,response_type,serialization_time,deserialization_time,network_time
     response_time.append(int(row[4]))
     response_time_bin.append(bins-1)
     response_time_sum[-1] += response_time[-1]
-    statement_exec_time_sum[-1] += int(row[7])
+    serialization_time_sum[-1] += int(row[7])
     msg_count[-1] += 1
     
 
@@ -85,10 +86,10 @@ for row in csv.reader(f):
 
 # print "step 3"
 average_response_time =             [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(response_time_sum, msg_count)];
-average_statement_exec_time_sum =   [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(statement_exec_time_sum, msg_count)];
+average_serialization_time_sum =   [0.0 if c == 0 else x/(c*msInNs) for x, c in izip(serialization_time_sum, msg_count)];
 throughput_per_second           =   [c/seconds_per_step for c in msg_count];
 
-# del average_statement_exec_time_sum[0]
+# del average_serialization_time_sum[0]
 # del msg_count[0]
 # del group_percentile[0]
 # 
@@ -114,7 +115,7 @@ for c in msg_count:
 
 # # ignore first and last 10% of time
 average_response_time               = average_response_time             [start:end]
-average_statement_exec_time_sum     = average_statement_exec_time_sum   [start:end]
+average_serialization_time_sum     = average_serialization_time_sum   [start:end]
 throughput_per_second               = throughput_per_second             [start:end]
 bins = end-start
 
@@ -150,7 +151,7 @@ if showGraph:
     plt.plot(
              steps, average_response_time,              'b',
     #         steps, group_percentile,                   'm',
-             steps, average_statement_exec_time_sum,    'k'
+             steps, average_serialization_time_sum,    'k'
              )
     plt.ylabel('Average response time (ms/second)')
     plt.xlabel('Elapsed seconds')
@@ -173,9 +174,9 @@ if showGraph:
     print str(error_time)
 else:
     if printThroughput:
-        print os.path.basename(filename)[-6:-4] + "," + str(len(throughput_array)) + "," + str(tp_mean) + "," + str(tp_std) + "," + str(tp_ci95) + "," + str(tp_ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (tp_ci95 * 100.0 / tp_mean)
+        print os.path.basename(filename)[3:6] + "," + str(len(throughput_array)) + "," + str(tp_mean) + "," + str(tp_std) + "," + str(tp_ci95) + "," + str(tp_ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (tp_ci95 * 100.0 / tp_mean)
     else:
-        print os.path.basename(filename)[-6:-4] + "," + str(len(response_time_array)) + "," + str(mean) + "," + str(std) + "," + str(ci95) + "," + str(ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (ci95 * 100.0 / mean)
+        print os.path.basename(filename)[3:6] + "," + str(len(response_time_array)) + "," + str(mean) + "," + str(std) + "," + str(ci95) + "," + str(ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (ci95 * 100.0 / mean)
         
         
         

@@ -10,6 +10,7 @@ import scipy as sp
 import scipy.stats
 import os
 from math import sqrt
+from scipy import interpolate
 
 izip = itertools.izip
 
@@ -51,28 +52,46 @@ for row in csv.reader(f):
 
 max_connection = throughput_connections[-1]
 
-plt.figure(figsize =(10,8))
 
-plt.subplot2grid((17,2), (0,0), rowspan=10, colspan=2)
-plt.plot(response_time_connections, response_time, 'bo-')
+if isNetwork: 
+    plt.figure(figsize =(10,4))
+    plt.subplot2grid((18,2), (0,0), rowspan=8, colspan=2)
+else: 
+    plt.figure(figsize =(10,8))
+    plt.subplot2grid((17,2), (0,0), rowspan=10, colspan=2)
+    
+f_interp = interpolate.splrep(response_time_connections, response_time, s=0)
+f_interp_x = np.arange(response_time_connections[0], response_time_connections[-1]+1, 1.0)
+plt.plot(f_interp_x, interpolate.splev(f_interp_x, f_interp, der=0), '--k', alpha=0.5)
+
+plt.plot(response_time_connections, response_time, 'bo')
 plt.title(title)
-plt.ylabel('Mean response time (ms)')
+plt.ylabel('(ms)')
 plt.errorbar(response_time_connections, response_time, yerr=response_time_std, ls='None', color="k", capsize=8)
 plt.errorbar(response_time_connections, response_time, yerr=response_time_ci95, ls='None', color="r", capsize=8)
 plt.xticks(np.arange(0, response_time_connections[-1]+1, 4.0))
-if isNetwork is False: plt.ylim(0, 80)
-else: plt.ylim(0, 18)
+if isNetwork: plt.ylim(0, 18)
+else: plt.ylim(0, 80)
 
-plt.subplot2grid((17,2), (11,0), rowspan=5, colspan=2)
-plt.plot(throughput_connections, throughput, 'go-')
+if isNetwork: plt.subplot2grid((18,2), (10,0), rowspan=8, colspan=2)
+else: plt.subplot2grid((17,2), (11,0), rowspan=5, colspan=2)
+
+f_interp = interpolate.splrep(throughput_connections, throughput, s=0)
+f_interp_x = np.arange(throughput_connections[0], throughput_connections[-1]+1, 1.0)
+plt.plot(f_interp_x, interpolate.splev(f_interp_x, f_interp, der=0), '--k', alpha=0.5)
+
+plt.plot([],[], 'bo', label='response time mean')
+plt.plot([],[], 'go', label='throughput time mean')
+plt.plot(throughput_connections, throughput, 'go')
 plt.xlabel('number of connections')
-plt.ylabel('Mean throughput (msg/s)')
-plt.errorbar(throughput_connections, throughput, yerr=throughput_ci95, ls='None', color="r", capsize=8, label='95% confidence interval')
+plt.ylabel('(messages/s)')
 plt.errorbar(throughput_connections, throughput, yerr=throughput_std, ls='None', color="k", capsize=8, label='standard deviation')
+plt.errorbar(throughput_connections, throughput, yerr=throughput_ci95, ls='None', color="r", capsize=8, label='95% confidence interval')
+plt.plot([], [], '--k', alpha=0.5, label='cubic-spline interpolation')
 plt.xticks(np.arange(0, throughput_connections[-1]+1, 4.0))
-if isNetwork is False: plt.ylim(0,10000)
-else: plt.ylim(0,22000)
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.3), ncol=5, numpoints=1, prop={'size':10})
+if isNetwork: plt.ylim(0,22000)
+else: plt.ylim(0,10000)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.3), ncol=3, numpoints=1, prop={'size':10})
 
 
 
