@@ -81,7 +81,7 @@ for i in range(len(response_time)):
     plt.errorbar((i+0.5)*width, throughput[i], yerr=throughput_ci95[i], ls='None', color="r", capsize=8, label=('95% confidence interval' if i + 1 == len(response_time) else ''))
 plt.legend(loc='upper center', bbox_to_anchor=(-0.15, -0.1), ncol=2, numpoints=1, prop={'size':10})
 plt.ylim(0)
-plt.ylabel("(msg/s)")
+plt.ylabel("(req/s)")
 plt.xlabel("throughput mean")
 plt.gca().xaxis.set_major_locator(plt.NullLocator())
 plt.suptitle(title, fontsize=14)

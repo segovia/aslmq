@@ -26,7 +26,7 @@ del msg_count[0]
 
 steps = range(1,bins)
 plt.plot(steps, msg_count, 'b')
-plt.ylabel('Throughput (msg/second)')
+plt.ylabel('Throughput (req/second)')
 plt.xlabel('Elapsed seconds')
 plt.xlim([1,bins-1])
 

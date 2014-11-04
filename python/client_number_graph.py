@@ -64,7 +64,7 @@ plt.title(title)
 plt.ylabel('response time (ms)')
 plt.errorbar(response_time_connections, response_time, yerr=response_time_std, ls='None', color="k", capsize=8)
 plt.errorbar(response_time_connections, response_time, yerr=response_time_ci95, ls='None', color="r", capsize=8)
-plt.xticks(np.arange(0, response_time_connections[-1]+1, 8.0))
+plt.xticks([0] + response_time_connections)
 plt.ylim(0, 60)
 
 plt.subplot2grid((18,2), (10,0), rowspan=8, colspan=2)
@@ -75,12 +75,12 @@ plt.plot(f_interp_x, interpolate.splev(f_interp_x, f_interp, der=0), '--k', alph
 
 plt.plot(throughput_connections, throughput, 'bo')
 plt.xlabel('number of clients')
-plt.ylabel('throughput (msg/s)')
+plt.ylabel('throughput (req/s)')
 plt.errorbar(throughput_connections, throughput, yerr=throughput_std, ls='None', color="k", capsize=8, label='standard deviation')
 plt.errorbar(throughput_connections, throughput, yerr=throughput_ci95, ls='None', color="r", capsize=8, label='95% confidence interval')
 plt.plot([],[], 'bo', label='mean')
 plt.plot([], [], '--k', alpha=0.5, label='cubic-spline interpolation')
-plt.xticks(np.arange(0, throughput_connections[-1]+1, 8.0))
+plt.xticks([0] + throughput_connections)
 plt.ylim(0,6000)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.3), ncol=4, numpoints=1, prop={'size':10})
 

@@ -51,7 +51,7 @@ for tl in ax1.get_yticklabels():
 
 ax2 = ax1.twinx()
 ax2.plot(steps, msg_count, 'r')
-ax2.set_ylabel('Throughput (msg/second)', color='r')
+ax2.set_ylabel('Throughput (req/second)', color='r')
 for tl in ax2.get_yticklabels():
     tl.set_color('r')
 

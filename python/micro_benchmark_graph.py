@@ -1,5 +1,3 @@
-
-
 import matplotlib.pyplot as plt
 import csv
 import itertools
@@ -10,76 +8,108 @@ import datetime
 import numpy as np
 import scipy as sp
 import scipy.stats
-import os
 from math import sqrt
 
 izip = itertools.izip
 
 msInNs = 1000000.0
 sInNs =  1000000000.0
-percentile = 99
-groupPercentile = 95
-
-filename = sys.argv[1]
-total_msg = sum(1 for line in open(filename)) -1
-msgsToDiscard = int(total_msg*0.12)
-msgsToDiscardEnd = int(total_msg*0.05)
-
-
 
 # print "step -1"
-f=open(filename)
+f=open(sys.argv[1])
 next(f) # skip first line
 
-# print "step 0"
-bins = 1
-seconds_per_step = 1.0
-time_step = seconds_per_step * sInNs
-elapsed_time            = []
-response_time           = [[] for x in range(8)]
-statement_exec_time     = [[] for x in range(8)]
+#request_type,response_time,std,ci95,serialization_time,std,ci95,deserialization_time,std,ci95,network_time,std,ci95
+#           0,            1,  2,   3,                 4,  5,   6,                   7,  8,   9,          10, 11,  12,      
+cl_response_time        = [[] for x in range(6)]
+cl_response_time_std    = [[] for x in range(6)]
+cl_network_time         = [[] for x in range(6)]
+cl_network_time_std     = [[] for x in range(6)]
 
-# print "step 1"
-elapsed_time = 0
-error_type = []
-error_time = []
-line_count = -1
+cl_response_time_ci95      = [[] for x in range(6)]
+cl_network_time_ci95      = [[] for x in range(6)]
 for row in csv.reader(f):
-    line_count += 1
-    if line_count < msgsToDiscard: continue
-    if line_count >= total_msg - msgsToDiscardEnd: break
-    elapsed_time = int(row[3])
-    request_type = int(row[5])
-    if request_type < 0 or request_type > 7:
-        raise NameError('Unknown request type')
-    if (int(row[6]) != 0):
-        error_time.append(elapsed_time/sInNs)
-        error_type.append(request_type)
-        continue
-#         raise NameError('A message had an error response')
-#     id,experiment_id,client_id,elapsed_time,database_network_time,request_type,response_type,statement_exec_time
-    response_time       [request_type].append(int(row[ 4]))
-    statement_exec_time [request_type].append(int(row[7]))
-    
+    request_type = int(row[0])
+    if request_type > 6: request_type -= 2
+    cl_response_time[request_type]      = float(row[1])/msInNs
+    cl_response_time_std[request_type]  = float(row[2])/msInNs
+    cl_network_time[request_type]       = float(row[10])/msInNs
+    cl_network_time_std[request_type]   = float(row[11])/msInNs   
+    cl_response_time_ci95[request_type] = float(row[3])/msInNs
+    cl_network_time_ci95[request_type]  = float(row[12])/msInNs
 
+# print "step -1"
+f=open(sys.argv[2])
+next(f) # skip first line
+#request_type,response_time,std,ci95,database_time,std,ci95,acquire_conn_time,std,ci95,serialization_time,std,ci95,deserialization_time,std,ci95,release_conn_time,std,ci95,statement_exec_time,std,ci95
+#           0,            1,  2,   3,            4,  5,   6,                7,  8,   9,                10, 11,  12,                  13, 14,  15,               16, 17,  18,                 19, 20,  21
+response_time           = [[] for x in range(6)]
+response_time_std       = [[] for x in range(6)]
+database_time           = [[] for x in range(6)]
+database_time_std       = [[] for x in range(6)]
+acquire_conn_time       = [[] for x in range(6)]
+acquire_conn_time_std   = [[] for x in range(6)]
+statment_exe_time       = [[] for x in range(6)]
+statment_exe_time_std   = [[] for x in range(6)]
+others_time             = [[] for x in range(6)]
 
-print "connections,request_type,samples,response_time,std,ci95,statement_exec_time,std,ci95"
-for request_type in range(8):
-    if request_type == 5 or request_type == 6: continue # skip login and logout messages
+response_time_ci95      = [[] for x in range(6)]
+database_time_ci95      = [[] for x in range(6)]
+acquire_conn_time_ci95  = [[] for x in range(6)]
+statment_exe_time_ci95  = [[] for x in range(6)]
+    
+for row in csv.reader(f):
+    request_type = int(row[0])
+    if request_type > 6: request_type -= 2
+    response_time[request_type]             = float(row[1])/msInNs
+    response_time_std[request_type]         = float(row[2])/msInNs
+    database_time[request_type]             = float(row[4])/msInNs
+    database_time_std[request_type]         = float(row[5])/msInNs
+    acquire_conn_time[request_type]         = float(row[7])/msInNs
+    acquire_conn_time_std[request_type]     = float(row[8])/msInNs
+    statment_exe_time[request_type]         = float(row[19])/msInNs
+    statment_exe_time_std[request_type]     = float(row[20])/msInNs
+    response_time_ci95[request_type]        = float(row[3])/msInNs
+    database_time_ci95[request_type]        = float(row[6])/msInNs
+    acquire_conn_time_ci95[request_type]    = float(row[9])/msInNs
+    statment_exe_time_ci95[request_type]    = float(row[21])/msInNs
+    others_time[request_type]           =  cl_response_time[request_type] - cl_network_time[request_type] + response_time[request_type] - database_time[request_type] - acquire_conn_time[request_type] - statment_exe_time[request_type]
+    cl_network_time[request_type] = cl_network_time[request_type] - response_time[request_type];
+    cl_network_time_std[request_type] = sqrt(pow(cl_network_time_std[request_type],2) + pow(response_time_std[request_type],2));
+    cl_network_time_ci95[request_type] = sqrt(pow(cl_network_time_ci95[request_type],2) + pow(response_time_ci95[request_type],2));
+    
+    
+    worst_ci95 = max(response_time_ci95[request_type]/response_time[request_type],
+                     database_time_ci95[request_type]/database_time[request_type],
+                     acquire_conn_time_ci95[request_type]/acquire_conn_time[request_type],
+                     statment_exe_time_ci95[request_type]/statment_exe_time[request_type],
+                     cl_response_time_ci95[request_type]/cl_response_time[request_type])
+    
+    print("Request type %d - other: %.2f%% worst ci95: %.2f%%" % (request_type, others_time[request_type] * 100.0 / cl_response_time[request_type], worst_ci95 * 100.0))
+    
+    
+    
+    
+ind = np.arange(6)
+width = 0.19
+opacity = 0.6
 
-    sys.stdout.write(os.path.basename(filename)[-6:-4] + "," + str(request_type) + ',' + str(len(response_time[request_type])) + ',' )
+error_config = {'ecolor': '0.5'}
 
-    response_time_array         = np.array(response_time          [request_type])
-    statement_exec_time_array   = np.array(statement_exec_time    [request_type])
-    
-    response_ci95           = scipy.stats.sem(response_time_array)          * sp.stats.t.ppf((1+0.95)/2., len(response_time_array)-1)
-    statement_exec_ci95     = scipy.stats.sem(statement_exec_time_array)    * sp.stats.t.ppf((1+0.95)/2., len(statement_exec_time_array)-1)
-    
-    sys.stdout.write(str(np.mean(response_time_array))          + ',' + str(np.std(response_time_array))          + ',' + str(response_ci95) + ',')
-    sys.stdout.write(str(np.mean(statement_exec_time_array))    + ',' + str(np.std(statement_exec_time_array))    + ',' + str(statement_exec_ci95) + '\n')
-    
-    
-# print "Error count: " + str(len(error_type))
-# print str(error_type)
-# print str(error_time)
+fig, ax = plt.subplots()
 
+clrBars     = ax.bar(ind+0*width, cl_response_time,     width, alpha=opacity, color='b', error_kw=error_config, yerr=cl_response_time_std)
+clnBars     = ax.bar(ind+1*width, cl_network_time,      width, alpha=opacity, color='r', error_kw=error_config, yerr=cl_network_time_std)
+acqBars     = ax.bar(ind+2*width, acquire_conn_time,    width, alpha=opacity, color='g', error_kw=error_config, yerr=acquire_conn_time_std)
+dbBars      = ax.bar(ind+3*width, database_time,        width, alpha=opacity, color='m', error_kw=error_config, yerr=database_time_std    )
+stBars      = ax.bar(ind+4*width, statment_exe_time,    width, alpha=opacity, color='k', error_kw=error_config, yerr=statment_exe_time_std)  
+
+ax.errorbar(ind+0.5*width, cl_response_time, yerr=cl_response_time_ci95, ls='None', color="r")
+ax.errorbar(ind+1.5*width, cl_network_time,  yerr=cl_network_time_ci95, ls='None', color="r")
+ax.errorbar(ind+2.5*width, acquire_conn_time, yerr=acquire_conn_time_ci95, ls='None', color="r")
+ax.errorbar(ind+3.5*width, database_time, yerr=database_time_ci95, ls='None', color="r")
+ax.errorbar(ind+4.5*width, statment_exe_time, yerr=statment_exe_time_ci95, ls='None', color="r")
+
+plt.ylim(0)
+plt.show()  
+    

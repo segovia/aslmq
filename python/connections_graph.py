@@ -20,7 +20,11 @@ sInNs =  1000000000.0
 # print "step -1"
 prefix = sys.argv[1]
 title = sys.argv[2]
-isNetwork = len(sys.argv) > 3
+isNetwork = False
+isNetworkDB = False
+if len(sys.argv) > 3:
+    isNetwork = True
+    isNetworkDB = sys.argv[3] == 'network_db'
 f=open(prefix + 'response_time.csv')
 next(f) # skip first line
 
@@ -69,8 +73,9 @@ plt.title(title)
 plt.ylabel('response time (ms)')
 plt.errorbar(response_time_connections, response_time, yerr=response_time_std, ls='None', color="k", capsize=8)
 plt.errorbar(response_time_connections, response_time, yerr=response_time_ci95, ls='None', color="r", capsize=8)
-plt.xticks(np.arange(0, response_time_connections[-1]+1, 4.0))
-if isNetwork: plt.ylim(0, 18)
+plt.xticks([0] + response_time_connections)
+if isNetworkDB: plt.ylim(0, 18)
+elif isNetwork: plt.ylim(0)
 else: plt.ylim(0, 80)
 
 if isNetwork: plt.subplot2grid((18,2), (10,0), rowspan=8, colspan=2)
@@ -82,16 +87,17 @@ plt.plot(f_interp_x, interpolate.splev(f_interp_x, f_interp, der=0), '--k', alph
 
 plt.plot(throughput_connections, throughput, 'bo')
 plt.xlabel('number of connections')
-plt.ylabel('throughput (msg/s)')
+plt.ylabel('throughput (req/s)')
 plt.errorbar(throughput_connections, throughput, yerr=throughput_std, ls='None', color="k", capsize=8, label='standard deviation')
 plt.errorbar(throughput_connections, throughput, yerr=throughput_ci95, ls='None', color="r", capsize=8, label='95% confidence interval')
 plt.plot([],[], 'bo', label='mean')
 plt.plot([], [], '--k', alpha=0.5, label='cubic-spline interpolation')
-plt.xticks(np.arange(0, throughput_connections[-1]+1, 4.0))
+plt.xticks([0] + throughput_connections)
 
 legend_y_coord = -0.3
-if isNetwork:
-    plt.ylim(0,22000)
+if isNetworkDB: plt.ylim(0,22000)
+elif isNetwork:
+    plt.ylim(0)
 else: 
     plt.ylim(0,10000)
     legend_y_coord = -0.25
