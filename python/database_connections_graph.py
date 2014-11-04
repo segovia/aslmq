@@ -66,7 +66,7 @@ plt.plot(f_interp_x, interpolate.splev(f_interp_x, f_interp, der=0), '--k', alph
 
 plt.plot(response_time_connections, response_time, 'bo')
 plt.title(title)
-plt.ylabel('(ms)')
+plt.ylabel('response time (ms)')
 plt.errorbar(response_time_connections, response_time, yerr=response_time_std, ls='None', color="k", capsize=8)
 plt.errorbar(response_time_connections, response_time, yerr=response_time_ci95, ls='None', color="r", capsize=8)
 plt.xticks(np.arange(0, response_time_connections[-1]+1, 4.0))
@@ -80,18 +80,22 @@ f_interp = interpolate.splrep(throughput_connections, throughput, s=0)
 f_interp_x = np.arange(throughput_connections[0], throughput_connections[-1]+1, 1.0)
 plt.plot(f_interp_x, interpolate.splev(f_interp_x, f_interp, der=0), '--k', alpha=0.5)
 
-plt.plot([],[], 'bo', label='response time mean')
-plt.plot([],[], 'go', label='throughput time mean')
-plt.plot(throughput_connections, throughput, 'go')
+plt.plot(throughput_connections, throughput, 'bo')
 plt.xlabel('number of connections')
-plt.ylabel('(messages/s)')
+plt.ylabel('throughput (msg/s)')
 plt.errorbar(throughput_connections, throughput, yerr=throughput_std, ls='None', color="k", capsize=8, label='standard deviation')
 plt.errorbar(throughput_connections, throughput, yerr=throughput_ci95, ls='None', color="r", capsize=8, label='95% confidence interval')
+plt.plot([],[], 'bo', label='mean')
 plt.plot([], [], '--k', alpha=0.5, label='cubic-spline interpolation')
 plt.xticks(np.arange(0, throughput_connections[-1]+1, 4.0))
-if isNetwork: plt.ylim(0,22000)
-else: plt.ylim(0,10000)
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.3), ncol=3, numpoints=1, prop={'size':10})
+
+legend_y_coord = -0.3
+if isNetwork:
+    plt.ylim(0,22000)
+else: 
+    plt.ylim(0,10000)
+    legend_y_coord = -0.25
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, legend_y_coord), ncol=4, numpoints=1, prop={'size':10})
 
 
 

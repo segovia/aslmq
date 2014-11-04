@@ -64,36 +64,40 @@ for event_list in gc_client_events_mat:
         gc_client_events.append(event-start*seconds_per_step)
         gc_client_events_y.append(0.1)
 
-steps = [x*seconds_per_step for x in range(1, rowCount - 4)]
+steps = [x*seconds_per_step for x in range(0, rowCount - 5)]
 
 # print "step 4"
-plt.figure(figsize =(10,5))
+plt.figure(figsize =(10,6))
 plt.subplot(3,1,1)
 
 plt.title('System Trace')
 plt.plot(steps, mean_response_time, 'b')
 plt.fill_between(steps, std_max_response_time, std_min_response_time, facecolor='yellow', alpha=0.3)
-plt.ylabel('Near scale (ms)')
+plt.ylabel('response time (ms)')
 # plt.yscale('log')
 plt.xlim(steps[0],steps[-1])
-plt.ylim(0,50)
+ymax = 50
+plt.ylim(0,ymax)
+plt.text(30, ymax*0.93, 'scaled to mean', fontsize=12, verticalalignment='top', bbox=dict(boxstyle='square', facecolor='white', alpha=0.7))
+
 
 plt.subplot(3,1,2)
 plt.plot(steps, mean_response_time, 'b')
 plt.fill_between(steps, std_max_response_time, std_min_response_time, facecolor='yellow', alpha=0.3)
-plt.ylabel('Far scale (ms)')
-plt.xlabel('Elapsed seconds')
+plt.ylabel('response time (ms)')
 # plt.yscale('log')
 plt.xlim(steps[0],steps[-1])
-plt.ylim(0,800)
+ymax = 800
+plt.ylim(0,ymax)
+plt.text(30, ymax*0.93, 'scaled to standard deviation', fontsize=12, verticalalignment='top', bbox=dict(boxstyle='square', facecolor='white', alpha=0.7))
 
 plt.subplot(3,1,3)
-plt.plot([],[], color='blue', label='response time mean')
-plt.plot(steps, throughput, 'g', label='throughput mean')
+plt.plot(steps, throughput, 'b')
+plt.plot([],[], color='blue', label='mean')
 plt.plot([],[], color='yellow', alpha=0.5, label='standard deviation', linewidth=8)
 plt.fill_between(steps, std_max_throughput, std_min_throughput, facecolor='yellow', alpha=0.3)
-plt.ylabel('(messages/s)')
-plt.xlabel('Elapsed seconds')
+plt.ylabel('throughput (msg/s)')
+plt.xlabel('elapsed seconds')
 # plt.yscale('log')
 plt.xlim(steps[0],steps[-1])
 # plt.ylim(0,800)
@@ -101,7 +105,7 @@ plt.ylim(0)
 
 
 
-plt.legend( loc='upper center', bbox_to_anchor=(0.5, -0.4), numpoints=1, ncol=4, prop={'size':10})
+plt.legend( loc='upper center', bbox_to_anchor=(0.5, -0.3), numpoints=1, ncol=4, prop={'size':10})
 
 
 # print "step 5"

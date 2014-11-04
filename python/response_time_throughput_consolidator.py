@@ -20,9 +20,14 @@ groupPercentile = 95
 
 showGraph = True
 printThroughput = False
+filenameStart = 0;
+filenameEnd = 0;
 if len(sys.argv) > 2:
     showGraph = False
     if sys.argv[2] == 'throughput': printThroughput = True
+    filenameStart = int(sys.argv[3])
+    filenameEnd = int(sys.argv[4])
+    
     
 
 # print "step -1"
@@ -150,7 +155,6 @@ if showGraph:
     # print "step 4"
     plt.plot(
              steps, average_response_time,              'b',
-    #         steps, group_percentile,                   'm',
              steps, average_serialization_time_sum,    'k'
              )
     plt.ylabel('Average response time (ms/second)')
@@ -158,10 +162,6 @@ if showGraph:
     plt.xlim([1,bins])
     # plt.ylim(0, 25)
     
-    # print "step 5"
-    # dt = datetime.datetime.now()
-    # plt.savefig('gen/' + filename[0:-4] + '.avg_resp_time.' + dt.strftime("%Y%m%d%H%M%S") + '.png', bbox_inches='tight')
-    plt.savefig('gen/' + os.path.basename(filename)[0:-4] + '.avg_resp_time.png', bbox_inches='tight')
     plt.show()
     # print "step 6"
     
@@ -174,9 +174,9 @@ if showGraph:
     print str(error_time)
 else:
     if printThroughput:
-        print os.path.basename(filename)[3:6] + "," + str(len(throughput_array)) + "," + str(tp_mean) + "," + str(tp_std) + "," + str(tp_ci95) + "," + str(tp_ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (tp_ci95 * 100.0 / tp_mean)
+        print os.path.basename(filename)[filenameStart:filenameEnd] + "," + str(len(throughput_array)) + "," + str(tp_mean) + "," + str(tp_std) + "," + str(tp_ci95) + "," + str(tp_ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (tp_ci95 * 100.0 / tp_mean)
     else:
-        print os.path.basename(filename)[3:6] + "," + str(len(response_time_array)) + "," + str(mean) + "," + str(std) + "," + str(ci95) + "," + str(ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (ci95 * 100.0 / mean)
+        print os.path.basename(filename)[filenameStart:filenameEnd] + "," + str(len(response_time_array)) + "," + str(mean) + "," + str(std) + "," + str(ci95) + "," + str(ci99) + "," + str(len(error_type)) + "," + "%.2f%%" % (ci95 * 100.0 / mean)
         
         
         

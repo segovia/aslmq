@@ -73,19 +73,9 @@ public class DatabaseTesterMonitor implements DatabaseMonitor {
 
 	private void storeMeasurement() {
 		if (masterMonitor.isActive()) {
-			long databaseNetworkTime = databaseElapsed;
-			// if (statementExecTime != UNKNOWN) {
-			// if (databaseElapsed >= statementExecTime) {
-			// databaseNetworkTime = databaseElapsed - statementExecTime;
-			// } else {
-			// // this might be caused by the db precision error
-			// statementExecTime = databaseElapsed;
-			// databaseNetworkTime = 0L;
-			// }
-			// }
 			masterMonitor.getQueue().offer(
 					new DatabaseTesterMeasurement(clientId, experimentElapsed, requestType, responseType,
-							databaseNetworkTime, statementExecTime));
+							databaseElapsed, statementExecTime));
 		}
 	}
 
