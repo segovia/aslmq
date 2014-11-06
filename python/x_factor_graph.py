@@ -63,7 +63,8 @@ colors = ['blue', 'green', 'red', 'orange', 'cyan', 'magenta', 'yellow', 'black'
 
 plt.figure(figsize =(10,3.5))
 plt.subplot2grid((1,2), (0,0), rowspan=1)
-plt.subplots_adjust(wspace=.3)
+if len(sys.argv) >= 5 and sys.argv[4] == 'large_title':
+    plt.subplots_adjust(wspace=.3, top=0.82)
 
 for i in range(len(response_time)):
     plt.bar(i*width, response_time[i], width, alpha=opacity, color=colors[i])
@@ -84,7 +85,7 @@ plt.ylim(0)
 plt.ylabel("(req/s)")
 plt.xlabel("throughput mean")
 plt.gca().xaxis.set_major_locator(plt.NullLocator())
-plt.suptitle(title, fontsize=14)
+plt.suptitle(title.replace('\\n','\n'), fontsize=14)
 
 plt.savefig('gen/' + os.path.basename(prefix)[0:-1] + '.' + suffix + '.png', bbox_inches='tight', dpi = 200)
 
