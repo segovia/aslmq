@@ -34,7 +34,7 @@ def read_client_gc_log_values(prefix):
     prev_instance_id = ''
     exp_id = exp_count/2-1
     for line in gc_file:
-        split = line.split(':');
+        split = line.split(':')
         time = float(split[0])
         instance_id = split[2]
         if prev_instance_id != instance_id:
@@ -44,8 +44,9 @@ def read_client_gc_log_values(prefix):
         
 #         print time
         time = time - (jvm_query_start[exp_id] - jvm_startup[exp_id]).total_seconds() + (db_query_start[exp_id] - min_db_query_start).total_seconds();
-         
-        gc_events[-1].append(time)
+        
+        duration = split[1].split(',')[1].split(' ')[1];
+        gc_events[-1].append([time, float(duration)])
     
     return gc_events
 

@@ -47,23 +47,6 @@ for row in csv.reader(f):
 
 print seconds_per_step
 
-###### read gc log
-gc_middle_events_mat = rmgl.read_middle_gc_log_values(prefix)
-gc_middle_events = []
-gc_middle_events_y = []
-for event_list in gc_middle_events_mat:
-    for event in event_list:
-        gc_middle_events.append(event-start*seconds_per_step)
-        gc_middle_events_y.append(0.1)
-        
-gc_client_events_mat = rcgl.read_client_gc_log_values(prefix)
-gc_client_events = []
-gc_client_events_y = []
-for event_list in gc_client_events_mat:
-    for event in event_list:
-        gc_client_events.append(event-start*seconds_per_step)
-        gc_client_events_y.append(0.1)
-
 steps = [x*seconds_per_step for x in range(0, rowCount - 5)]
 
 # print "step 4"

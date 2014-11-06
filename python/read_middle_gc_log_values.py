@@ -44,8 +44,8 @@ def read_middle_gc_log_values(prefix):
         
 #         print time
         time = time - (jvm_query_start[exp_id] - jvm_startup[exp_id]).total_seconds() + (db_query_start[exp_id] - min_db_query_start).total_seconds();
-         
-        gc_events[-1].append(time)
+        duration = split[1].split(',')[1].split(' ')[1];
+        gc_events[-1].append([time, float(duration)])
     
     return gc_events
 

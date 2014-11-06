@@ -88,6 +88,8 @@ for request_type in range(8):
     release_conn_time_array     = np.array(release_conn_time      [request_type])
     statement_exec_time_array   = np.array(statement_exec_time    [request_type])
     
+    database_time_array += statement_exec_time_array
+    
     response_ci95           = scipy.stats.sem(response_time_array)          * sp.stats.t.ppf((1+0.95)/2., len(response_time_array)-1)
     database_ci95           = scipy.stats.sem(database_time_array)          * sp.stats.t.ppf((1+0.95)/2., len(database_time_array)-1)
     acquire_conn_ci95       = scipy.stats.sem(acquire_conn_time_array)      * sp.stats.t.ppf((1+0.95)/2., len(acquire_conn_time_array)-1)

@@ -73,7 +73,7 @@ ind = np.arange(len(base_connections[0]))
 width = 0.15
 opacity = 0.5
 colors = ['blue', 'green', 'red', 'orange', 'cyan', 'magenta', 'yellow', 'black']
-msg_types_labels = ['send', 'read peek', 'read pop', 'create queueu', 'delete queue', 'find queues']
+msg_types_labels = ['send', 'read peek', 'read pop', 'create queue', 'delete queue', 'find queues']
 
 plt.subplots_adjust(hspace=0.08)
 
