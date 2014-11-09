@@ -10,6 +10,8 @@ import numpy as np
 import scipy as sp
 import scipy.stats
 from math import sqrt
+from matplotlib.ticker import MultipleLocator
+
 
 izip = itertools.izip
 
@@ -52,6 +54,10 @@ for i in range(6):
     plt.errorbar(ind+(i+0.5)*width, database_time[i], yerr=database_time_ci95[i], ls='None', color="r", capsize=4, label=('95% confidence interval' if i + 1 == 6 else ''))
 plt.ylim(0, 46)
 plt.ylabel('response time (ms)')
+
+plt.gca().yaxis.set_minor_locator(MultipleLocator(2))
+plt.gca().yaxis.grid(True, linestyle='--')
+plt.gca().yaxis.grid(b=True, which='minor')
 
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.13), ncol=4, numpoints=1, prop={'size':10})
 

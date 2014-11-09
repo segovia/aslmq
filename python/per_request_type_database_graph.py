@@ -78,7 +78,7 @@ msg_types_labels = ['send', 'read peek', 'read pop', 'create queue', 'delete que
 plt.subplots_adjust(hspace=0.08)
 
 plt.subplot2grid((2,1), (0,0))
-plt.title("Sytem Performance: Request Type X Database Connections")
+plt.title("Database Performance: Request Type X Database Connections")
 plt.xticks(ind+3.0*width, base_connections[0])
 for i in range(6):
     plt.bar(ind+i*width, base_response_time[i], width, alpha=opacity, color=colors[i], label=msg_types_labels[i])

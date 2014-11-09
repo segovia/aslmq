@@ -115,6 +115,11 @@ if len(sys.argv) >= 6 and sys.argv[5] == 'big':
     plt.gca().yaxis.grid(True, linestyle='--')
     plt.gca().yaxis.grid(b=True, which='minor')
 
+if len(sys.argv) >= 7 and sys.argv[6] == '2_factor':
+    plt.gca().yaxis.set_minor_locator(MultipleLocator(10))
+    plt.gca().yaxis.grid(True, linestyle='--')
+    plt.gca().yaxis.grid(b=True, which='minor')
+    
 if len(sys.argv) >= 7 and sys.argv[6] == '3_factor':
     plt.xlabel('m/n/type: m     = number of middleware\n                n      = number of database connections\n                type = type of database instance (baseline or large)', fontsize=10, ha='left', x=0.0625, bbox=dict(boxstyle='square', facecolor='white', alpha=1.0))
 

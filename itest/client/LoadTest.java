@@ -41,7 +41,7 @@ public class LoadTest extends AbstractSystemTest {
 	@Test
 	public void testConcurrentLoad() throws Throwable {
 		setTimeout(1000 * 60 * 60);
-		final int msgCount = 32000;
+		final int msgCount = 3200;
 		int threads = 16;
 		final int msgPerThread = msgCount / threads;
 		System.out.println(msgPerThread);
