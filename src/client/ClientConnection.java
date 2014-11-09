@@ -11,17 +11,6 @@ import shared.dto.OKResponseDTO;
 import shared.dto.RequestDTO;
 import shared.dto.ResponseDTO;
 
-//TODO messages sent as text, delimited by pipe and new line. contents are escaped to avoid a missreading message
-//TODO computer froze with 20.000 connections
-//TODO verify indices
-//TODO make very clear that client only connect to monitor db
-//TODO experiment starts are marked in the db
-// TODO some foreign keys were omited, no use.
-// TODO a client is a thread in a client machine, since it connects with own socket
-// TODO mention how unreliable amazon is
-// TODO figure out why I had 4 errors
-// TODO network measurement between server and client was calculated from the means and variances
-
 public class ClientConnection implements AutoCloseable {
 
 	private Integer id;

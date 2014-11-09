@@ -13,6 +13,12 @@ import shared.Logger;
 import shared.PropertiesLoader;
 import shared.dto.ResponseType;
 
+/**
+ * Starting point for client applciation
+ *
+ * @author gustavo
+ *
+ */
 public class ClientWorkloadPool {
 
 	public static volatile boolean active = false;
@@ -44,7 +50,7 @@ public class ClientWorkloadPool {
 		}
 
 		WorkloadFactory workloadFactory = workloadFactoryOverride == null ? new ClientWorkloadFactory()
-				: workloadFactoryOverride;
+		: workloadFactoryOverride;
 		for (int clientId = minClientId; clientId <= maxClientId; clientId++) {
 			try {
 				clientWorkloads.add(workloadFactory.instanciate(workloadName, clientId, serverHost, serverPort,

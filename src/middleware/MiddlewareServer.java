@@ -15,7 +15,12 @@ import shared.Logger;
 import shared.PropertiesLoader;
 import shared.dto.ResponseType;
 
-// TODO figure out benchmarking serialization
+/**
+ * Starting point for middlware applciation
+ *
+ * @author gustavo
+ *
+ */
 public class MiddlewareServer {
 
 	private static ExecutorService pool;
@@ -25,14 +30,6 @@ public class MiddlewareServer {
 	public static volatile boolean active = false;
 	private static volatile MiddlewareMasterMonitor masterMonitor = null;
 
-	// TODO I should read oldest message, not newest.
-	// TODO make sure I am not create statements all the time
-	// TODO consider using Externalizable for serialization performance
-	// TODO have a test that proves concurrency is ok with one big queue and every one deleting it
-	// TODO and a check for concurrency by having 20 big queues and 20 threads deleting it all
-	// TODO test queue delete on cascade
-	// TODO check if index is actually used (mention that the queries were analyzed)
-	// TODO create a cache for getting only peek messages
 	public static void main(String[] args) throws SQLException, IOException {
 		int argIdx = 0;
 		String propertiesFile = args[argIdx++];

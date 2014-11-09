@@ -7,6 +7,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import shared.MasterMonitor;
 
+/**
+ * Client's implementation of {@link MasterMonitor}
+ * 
+ * @author gustavo
+ *
+ */
 public class ClientMasterMonitor extends MasterMonitor<ClientMeasurement> {
 
 	private LinkedBlockingQueue<ClientMeasurement> queue;

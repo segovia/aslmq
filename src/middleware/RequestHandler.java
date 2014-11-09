@@ -27,6 +27,12 @@ import shared.dto.ResponseDTO;
 import shared.dto.ResponseType;
 import shared.dto.SendMessageRequestDTO;
 
+/**
+ * Handles all incoming requests from a socket
+ * 
+ * @author gustavo
+ *
+ */
 public class RequestHandler implements Runnable {
 
 	private volatile boolean active = true;
@@ -136,8 +142,6 @@ public class RequestHandler implements Runnable {
 
 	private ResponseDTO queryDatabase(RequestDTO dto, MiddlewareDBConnection dbConnection) {
 		if (dto instanceof SendMessageRequestDTO) {
-			// TODO Create incoming message queue and batch inserts. Maybe not possible if needs to give
-			// feedback on insert. also, how to check that queue does not exist error if in batch
 			return dbConnection.writeMessage(clientAccountId, (SendMessageRequestDTO) dto, monitor);
 		} else if (dto instanceof ReadMessageRequestDTO) {
 			return dbConnection.getMessage(clientAccountId, (ReadMessageRequestDTO) dto, monitor);

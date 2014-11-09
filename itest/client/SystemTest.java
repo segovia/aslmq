@@ -211,9 +211,6 @@ public class SystemTest extends AbstractSystemTest {
 		});
 	}
 
-	// TODO test with specific receiver
-	// TODO multiple queues
-
 	/**
 	 * Make sure delete queue really removes queue and its messages.
 	 *

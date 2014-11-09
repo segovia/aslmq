@@ -6,7 +6,7 @@ import shared.dto.RequestType;
 import shared.dto.ResponseType;
 
 /**
- * Assumes that only one message is sent at a time.
+ * Monitors a request handler. Assumes that only one message is sent at a time.
  *
  * @author Gustavo
  *
@@ -79,10 +79,12 @@ public class RequestHandlerMonitor implements ThreadMonitor, DatabaseMonitor {
 		deserializeElapsed = databaseStart - deserializeStart;
 	}
 
+	@Override
 	public void setStatementExecTime(Long statementExecTime) {
 		this.statementExecTime = statementExecTime;
 	}
 
+	@Override
 	public void setStatementExecTimeToUnknown() {
 		statementExecTime = UNKNOWN;
 	}

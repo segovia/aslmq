@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * Takes care of a pool of {@link MiddlewareDBConnection}s
+ * 
+ * @author gustavo
+ *
+ */
 public class MiddlewareDBConnectionPool {
 
 	private static int maxConnections;

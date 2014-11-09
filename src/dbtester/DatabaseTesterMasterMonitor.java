@@ -7,6 +7,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import shared.MasterMonitor;
 
+/**
+ * Database tester implementation for Master monitor
+ * 
+ * @author gustavo
+ *
+ */
 public class DatabaseTesterMasterMonitor extends MasterMonitor<DatabaseTesterMeasurement> {
 
 	public LinkedBlockingQueue<DatabaseTesterMeasurement> queue;

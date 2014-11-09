@@ -10,6 +10,12 @@ import shared.dto.FindQueuesWithMessagesRequestDTO;
 import shared.dto.ReadMessageRequestDTO;
 import shared.dto.SendMessageRequestDTO;
 
+/**
+ * Generates the default workload for experiments
+ * 
+ * @author gustavo
+ *
+ */
 public class DefaultWorkload extends ClientWorkload {
 
 	private static final int TARGET_QUEUE = 1;

@@ -94,6 +94,27 @@
 		
 		<zip destfile="${dbTestZip}" basedir="${dbTestDist}" />
 	</target>
+	
+	<target name="run-middleware" depends="dist" description="runs the middleware" >
+		<java jar="${middlewareJar}"  fork="yes" >
+			<arg value="${middlewareDist}/localhost.properties"/>
+			<arg value="15"/>
+			<arg value="false"/>
+			<arg value="0"/>
+		  </java>
+	</target>
+
+	<target name="run-client" depends="dist" description="runs the client" >
+		<java jar="${clientJar}"  fork="yes" >
+			<arg value="${clientDist}/localhost.properties"/>
+			<arg value="localhost"/>
+			<arg value="1"/>
+			<arg value="10"/>
+			<arg value="default"/>
+			<arg value="false"/>
+			<arg value="0"/>
+		  </java>
+	</target>
 
 	<target name="clean" description="clean up" >
 		<!-- Delete the ${build} and ${dist} directory trees -->

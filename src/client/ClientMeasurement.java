@@ -3,6 +3,12 @@ package client;
 import shared.dto.RequestType;
 import shared.dto.ResponseType;
 
+/**
+ * A measurement for cliennt
+ * 
+ * @author gustavo
+ *
+ */
 public class ClientMeasurement {
 	private final Integer clientId;
 	private final Long elapsedTime;

@@ -3,6 +3,12 @@ package dbtester;
 import shared.dto.RequestType;
 import shared.dto.ResponseType;
 
+/**
+ * Measurement for Database tester
+ * 
+ * @author gustavo
+ *
+ */
 public class DatabaseTesterMeasurement {
 	private final Integer clientId;
 	private final Long elapsedTime;

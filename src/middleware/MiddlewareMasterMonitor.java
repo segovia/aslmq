@@ -7,6 +7,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import shared.MasterMonitor;
 
+/**
+ * Middleware's implementation of {@link MasterMonitor}
+ * 
+ * @author gustavo
+ *
+ */
 public class MiddlewareMasterMonitor extends MasterMonitor<MiddlewareMeasurement> {
 
 	public LinkedBlockingQueue<MiddlewareMeasurement> queue;

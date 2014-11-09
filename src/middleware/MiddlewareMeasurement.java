@@ -3,6 +3,12 @@ package middleware;
 import shared.dto.RequestType;
 import shared.dto.ResponseType;
 
+/**
+ * A measurement for middleware
+ *
+ * @author gustavo
+ *
+ */
 public class MiddlewareMeasurement {
 	private final Integer clientId;
 	private final Long elapsedTime;

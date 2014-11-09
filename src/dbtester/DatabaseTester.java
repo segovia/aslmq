@@ -14,6 +14,12 @@ import shared.PropertiesLoader;
 import shared.SampleMessage;
 import client.ClientWorkloadPool;
 
+/**
+ * Starting point for Database tester program
+ *
+ * @author gustavo
+ *
+ */
 public class DatabaseTester {
 
 	private static ExecutorService pool;

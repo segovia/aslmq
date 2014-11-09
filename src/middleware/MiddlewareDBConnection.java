@@ -26,8 +26,6 @@ import shared.dto.ResponseType;
 import shared.dto.SendMessageRequestDTO;
 
 public class MiddlewareDBConnection implements AutoCloseable {
-	// TODO create connection pool
-	// TODO manage the statements
 
 	private Connection conn; // only one connection
 

@@ -12,6 +12,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * Super class responsible for holding on to measurements and sending them to a database table when experiment is over.
+ *
+ * @author gustavo
+ *
+ * @param <M>
+ *            Measurement
+ */
 public abstract class MasterMonitor<M> implements Runnable {
 
 	protected final static int BATCH_SIZE = 10000;

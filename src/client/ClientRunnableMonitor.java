@@ -5,7 +5,7 @@ import shared.dto.RequestType;
 import shared.dto.ResponseType;
 
 /**
- * Assumes that only one message is sent at a time.
+ * Monitors a running {@link ClientWorkload}. Assumes that only one message is sent at a time.
  *
  * @author Gustavo
  *

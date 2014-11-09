@@ -2,6 +2,12 @@ package client;
 
 import java.io.IOException;
 
+/**
+ * Client implementation of workload factory
+ * 
+ * @author gustavo
+ *
+ */
 public class ClientWorkloadFactory implements WorkloadFactory {
 
 	@Override
